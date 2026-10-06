@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Retrieval Cue Failure: a TCM Sandbox</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+
+  <!-- ====================================================================
+       THE EXPLANATION
+       Each <section class="story"> is text on the left and a live demo on
+       the right. The demo is built by explainer.js from data-demo="name".
+       ==================================================================== -->
+
+  <header class="hero">
+    <p class="eyebrow">Declarative memory &middot; Temporal Context Model</p>
+    <h1>Forgetting is not always loss</h1>
+    <p class="lede">
+      You know the feeling: a name won&rsquo;t come, until someone says its first letter and suddenly it is
+      there. The memory was never gone. Psychologists call this <b>retrieval cue failure</b>: the memory is
+      still stored, but nothing in your current situation leads to it.
+    </p>
+    <p class="lede">
+      This page explains one simple computational model of how that happens, then lets you run it yourself.
+      Every figure below is the real model running live at a small scale. Nothing is scripted.
+    </p>
+    <a class="jump" href="#model">Skip to the model</a>
+  </header>
+
+  <section class="story" id="part-available">
+    <div class="story-text">
+      <p class="step">1 &middot; The big idea</p>
+      <h2>Stored is not the same as reachable</h2>
+      <p>
+        Every memory raises two separate questions. Is it still stored? And can you get to it right now?
+        The psychologist Endel Tulving called these <b>availability</b> and <b>accessibility</b>. They usually go
+        together, so we rarely notice the difference. But they can come apart, and when they do, you forget
+        something that is still there.
+      </p>
+      <p>
+        That is retrieval cue failure. The trace is intact, but nothing in your current situation points to it.
+        Give it the right cue and it comes straight back.
+      </p>
+      <p>
+        On the right, the grey bar is what is stored. The blue bar is what can be reached from where your mind is
+        now. The green bar is what can be reached with the right cue. Tick the box to see real forgetting for
+        comparison: the grey bar itself starts to fall, and no cue can bring back what is gone.
+      </p>
+    </div>
+    <figure class="figure">
+      <div class="demo" data-demo="available"></div>
+      <figcaption>Try it: drag the slider from 0 to 30, then tick the box.</figcaption>
+    </figure>
+  </section>
+
+  <section class="story" id="part-context">
+    <div class="story-text">
+      <p class="step">2 &middot; Context</p>
+      <h2>A context is a pattern, and overlap says how alike two patterns are</h2>
+      <p>
+        The model is called the Temporal Context Model. Its central idea is that your mind always has a
+        <b>context</b>: a running snapshot of everything going on at the moment, such as where you are, how you
+        feel and what you were just thinking about. In the model, a context is a list of 80 numbers. Blue cells
+        are positive and orange cells are negative.
+      </p>
+      <p>
+        No single cell means anything. What matters is the whole pattern, and how much two patterns
+        <b>overlap</b>. Overlap runs from 1 (identical) down to about 0 (unrelated). Two unrelated random patterns
+        still overlap by a little, up to about 0.1 either way. That is the noise floor of the model.
+      </p>
+      <p>Everything that follows is built on this one measurement.</p>
+    </div>
+    <figure class="figure">
+      <div class="demo" data-demo="context"></div>
+      <figcaption>Try it: slide from 0 to 1 and watch pattern B turn into pattern A.</figcaption>
+    </figure>
+  </section>
+
+  <section class="story" id="part-drift">
+    <div class="story-text">
+      <p class="step">3 &middot; Drift</p>
+      <h2>Every event pushes the context a little further away</h2>
+      <p>
+        Life does not pause. Each new event brings something new into your head, and the context shifts to make
+        room. In the model, the new context keeps a share of the old one and mixes in the new input:
+      </p>
+      <p class="formula">t<sub>new</sub> = &rho; &middot; t<sub>old</sub> + &beta; &middot; t<sub>input</sub></p>
+      <p>
+        &beta; is how strongly the new event pushes. &rho; is chosen automatically so the pattern stays the same
+        size, which means a larger &beta; pushes out more of the old context.
+      </p>
+      <p>
+        Nothing is erased. The old context is simply diluted, event after event. The bottom strip on the right
+        shows the overlap between the context when a word was studied and the context now. It fades, but at no
+        point is anything deleted. As the context drifts it stops pointing at the memories that were stored in it.
+        That is the whole mechanism of forgetting in this model.
+      </p>
+    </div>
+    <figure class="figure">
+      <div class="demo" data-demo="drift"></div>
+      <figcaption>Try it: add 20 events, then change &beta; and add 20 more.</figcaption>
+    </figure>
+  </section>
+
+  <section class="story" id="part-encode">
+    <div class="story-text">
+      <p class="step">4 &middot; Studying</p>
+      <h2>A word is stored together with its context</h2>
+      <p>
+        When you study a word, the model records the context at that moment next to the word. That pairing is the
+        memory trace. It is written once and never changes.
+      </p>
+      <p>
+        Two things follow. First, words studied one after another get similar contexts, because the context only
+        drifts a little between them. In the grid on the right, neighbouring words overlap strongly and distant
+        words barely do.
+      </p>
+      <p>
+        Second, anything present while you study, such as a place or a song, leaves its fingerprint in the context
+        of every word studied there. That fingerprint is what a cue can later latch onto.
+      </p>
+    </div>
+    <figure class="figure">
+      <div class="demo" data-demo="encode"></div>
+      <figcaption>Try it: study four words, then tick a different feature and study two more.</figcaption>
+    </figure>
+  </section>
+
+  <section class="story" id="part-cues">
+    <div class="story-text">
+      <p class="step">5 &middot; Cues</p>
+      <h2>A cue works only if it was part of the memory</h2>
+      <p>
+        To get a word back, the model uses a <b>cue</b>: the current context, plus anything you deliberately bring
+        to mind, such as returning to a place or hearing a song. The cue is compared with the context stored with
+        each word. The more they overlap, the more accessible the word is.
+      </p>
+      <p>
+        This is the <b>encoding specificity principle</b> (Tulving and Thomson, 1973): a cue helps only if it was
+        encoded along with the memory. Nothing in the code states it as a rule. It falls out of the arithmetic. If
+        Place A was present at study, its fingerprint is in the stored context, so a Place A cue overlaps with it.
+        Place B was never there, so a Place B cue overlaps with nothing and adds nothing.
+      </p>
+      <p>
+        The orange line on the bars marks roughly how much overlap a word needs to win the race described next.
+      </p>
+    </div>
+    <figure class="figure">
+      <div class="demo" data-demo="cues"></div>
+      <figcaption>Try it: cue with something that was present at study, then with something that was not.</figcaption>
+    </figure>
+  </section>
+
+  <section class="story" id="part-race">
+    <div class="story-text">
+      <p class="step">6 &middot; Retrieval</p>
+      <h2>Recall is a noisy race between memories</h2>
+      <p>
+        Overlap sets how hard the cue pulls on each word. Every word has an activation that rises under that pull,
+        leaks away over time, is held back by competition from the other words, and is jostled by noise. The first
+        word to cross the threshold is recalled.
+      </p>
+      <p>
+        Because of the noise, the same setup can give a different winner each time. But when the pull is far below
+        the threshold, as it is for a cue that does not match, no amount of waiting helps. The memories are stored
+        and the race still never produces a winner. That is retrieval cue failure, produced by the model instead of
+        written into it.
+      </p>
+    </div>
+    <figure class="figure">
+      <div class="demo" data-demo="race"></div>
+      <figcaption>Try it: run the race with each cue, several times.</figcaption>
+    </figure>
+  </section>
+
+  <section class="story" id="part-reinstate">
+    <div class="story-text">
+      <p class="step">7 &middot; Reinstatement</p>
+      <h2>Remembering one word moves you towards its neighbours</h2>
+      <p>
+        When a word wins, the model does more than output it. The word&rsquo;s stored context is blended back into
+        the current context. For a moment, the mind is partly back in the situation where the word was studied.
+      </p>
+      <p>
+        That matters because words studied close together have similar contexts. After a recall, the current
+        context overlaps more with the neighbours of the recalled word. They become more accessible and tend to
+        come out next. This is why one recovered memory can unlock others, and why recalled words come out in
+        clusters that follow the original order.
+      </p>
+      <p>
+        In the chart, grey bars show accessibility before the recall and green bars show it after. Any word whose
+        green bar passes the orange line is now likely to win.
+      </p>
+    </div>
+    <figure class="figure">
+      <div class="demo" data-demo="reinstate"></div>
+      <figcaption>Try it: recall one word, then another. Set &beta; to 0 and start again.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ====================================================================
+       HOW TO USE THE SANDBOX
+       ==================================================================== -->
+
+  <section class="story" id="part-guide">
+    <div class="story-text">
+      <p class="step">Using the sandbox</p>
+      <h2>Three steps, then the panels</h2>
+      <p>
+        The sandbox below puts all of this in one place. Controls are on the left and the panels showing what the
+        model is doing are on the right. Work down the three numbered cards:
+      </p>
+      <ol class="plain">
+        <li>
+          <b>Build the memory.</b> <i>Study next</i> encodes one word using the highlighted row of the study grid,
+          in whatever context you are in at that moment. <i>Reset &amp; study whole list</i> does the whole list at
+          once.
+        </li>
+        <li>
+          <b>Let time pass.</b> Each event moves the context. Add one, five or twenty.
+        </li>
+        <li>
+          <b>Test recall.</b> <i>Start test</i> runs the race. With <i>Pause after each recalled word</i> ticked, it
+          stops as soon as one word wins, so you can read the reinstatement panel. Untick it to let the test run to
+          the end.
+        </li>
+      </ol>
+      <p>
+        <b>Features of the world</b> are things like a place or a song. <i>During wait &amp; test</i> keeps a feature
+        present in every event, like staying in the same room. <i>Use as cue</i> adds it to the retrieval cue. The
+        study grid decides which features are present when each word is studied.
+      </p>
+    </div>
+    <figure class="figure">
+      <div class="map" aria-label="Layout of the sandbox">
+        <div class="map-col">
+          <div class="map-box map-step"><b>1 Build the memory</b><span>Study words</span></div>
+          <div class="map-box map-step"><b>2 Let time pass</b><span>Add events</span></div>
+          <div class="map-box map-step"><b>3 Test recall</b><span>Start, pause, continue</span></div>
+          <div class="map-box"><b>Model settings</b><span>Sliders</span></div>
+          <div class="map-box"><b>Features of the world</b><span>Wait and cue ticks</span></div>
+          <div class="map-box"><b>Study context per word</b><span>Which features, per word</span></div>
+        </div>
+        <div class="map-col">
+          <div class="map-box"><b>Memories</b><span>One chip per word, three bars, status line</span></div>
+          <div class="map-box"><b>Context vectors</b><span>Stored, current and cue</span></div>
+          <div class="map-box"><b>Retrieval race</b><span>Live activation of every word</span></div>
+          <div class="map-box"><b>Reinstatement</b><span>What the last recall did</span></div>
+          <div class="map-box"><b>Drift</b><span>Each word fading over time</span></div>
+          <div class="map-box"><b>Stored associations</b><span>The stored contexts</span></div>
+        </div>
+      </div>
+      <figcaption>The sandbox at a glance.</figcaption>
+    </figure>
+  </section>
+
+  <section class="guide-wide">
+    <h3>Six things to try</h3>
+    <ol class="experiments">
+      <li>
+        <b>Forgetting without loss.</b> Press <i>Reset &amp; study whole list</i>, then <i>+20 events</i>, then
+        <i>Start test</i>. With no cue, most words stay out of reach (about one in ten comes back). Now tick
+        <i>Place A</i> under <i>Use as cue</i> and test again. All eight words come back, although nothing was stored in
+        between.
+      </li>
+      <li>
+        <b>A cue that was never encoded.</b> Untick Place A and tick Place B or Smell instead. Almost nothing comes
+        back, because neither was present at study.
+      </li>
+      <li>
+        <b>A cue that picks out some words.</b> In the study grid press <i>Split A / B</i>, then reset and study the
+        whole list, add 20 events, cue with Place A and start a test with the pause on. The first word recalled
+        almost always comes from the half studied in Place A (about nine times in ten). Switch the cue to Place B
+        and it comes from the other half.
+      </li>
+      <li>
+        <b>One word at a time.</b> Press <i>Reset</i>, then alternate <i>Study next</i> and <i>+5 events</i>. The drift
+        panel shows each word fading from the moment it was studied, and the stored contexts show how the context
+        changed between words.
+      </li>
+      <li>
+        <b>Why recall snowballs.</b> Press <i>None</i> in the study grid, reset and study the whole list, add 3 events,
+        untick every cue and start a test with the pause on. When the first word is recalled, look at the
+        reinstatement panel: its neighbours jump. Press <i>Continue</i> to watch them come out. Then set
+        <i>Reinstatement &beta;</i> to 0 and repeat. Averaged over 40 different worlds, the model recalled all eight
+        words with reinstatement on and about 60% of them with it off.
+      </li>
+      <li>
+        <b>Real forgetting.</b> Set <i>True trace decay</i> to 0.03 and repeat the first experiment. The Stored bar now
+        falls too (to about half after 20 events), and the right cue brings back only about half the words.
+      </li>
+    </ol>
+
+    <h3>What the sliders do</h3>
+    <dl class="settings">
+      <div><dt>List length</dt><dd>The most words you can study.</dd></div>
+      <div><dt>Encoding drift &beta;</dt><dd>How far the context moves each time a word is studied. High values give words more distinct contexts.</dd></div>
+      <div><dt>Drift per event &beta;</dt><dd>How far the context moves with each event while time passes. This is the main forgetting-speed dial.</dd></div>
+      <div><dt>Reinstatement &beta;</dt><dd>How strongly a recalled word pulls its context back in. At 0, reinstatement is off.</dd></div>
+      <div><dt>Feature strength</dt><dd>How strongly ticked features count against a random input when events happen.</dd></div>
+      <div><dt>Cue weight</dt><dd>How strongly the ticked cue features count against the current context.</dd></div>
+      <div><dt>Noise</dt><dd>How much randomness the race has. At 0 it is nearly deterministic.</dd></div>
+      <div><dt>Competition</dt><dd>How strongly active words hold each other back. High values give more winner-takes-all recall.</dd></div>
+      <div><dt>True trace decay</dt><dd>The share of each trace lost per event. At 0, all forgetting is cue failure.</dd></div>
+    </dl>
+  </section>
+
+
+  <!-- ====================================================================
+       THE SANDBOX
+       Built by sandbox.js. Ids here (btn-*, cv-*, bar-*, ...) are used there.
+       ==================================================================== -->
+
+  <section id="model">
+    <div class="model-head">
+      <h2>The sandbox</h2>
+      <a class="jump quiet" href="#part-available">Back to the explanation</a>
+    </div>
+
+    <div class="wrap">
+      <aside>
+        <div class="card">
+          <h2>1. Build the memory</h2>
+          <label class="inline" for="seed">Seed</label>
+          <input type="number" id="seed" value="7">
+          <button class="secondary" id="btn-reset">Reset</button>
+          <button class="secondary" id="btn-random-seed">Random seed</button><br>
+          <button id="btn-study-next">Study next</button>
+          <button class="secondary" id="btn-study-all">Reset &amp; study whole list</button>
+        </div>
+
+        <div class="card">
+          <h2>2. Let time pass</h2>
+          <button class="secondary" id="btn-wait-1">+1 event</button>
+          <button class="secondary" id="btn-wait-5">+5 events</button>
+          <button class="secondary" id="btn-wait-20">+20 events</button>
+        </div>
+
+        <div class="card">
+          <h2>3. Test recall</h2>
+          <button id="btn-test">Start test</button>
+          <button class="secondary" id="btn-continue" disabled>Continue</button>
+          <button class="secondary" id="btn-stop" disabled>Stop test</button>
+          <label class="check">
+            <input type="checkbox" id="pause-on-recall" checked>
+            Pause after each recalled word
+          </label>
+        </div>
+
+        <div class="card">
+          <h2>Model settings</h2>
+          <div id="sliders"></div> <!-- filled by buildSliders() in sandbox.js -->
+        </div>
+
+        <div class="card">
+          <h2>Features of the world</h2>
+          <table id="feature-table"> <!-- rows filled by buildFeatureTable() -->
+            <tr><th></th><th>During wait &amp; test</th><th>Use as cue</th></tr>
+          </table>
+        </div>
+
+        <div class="card">
+          <h2>Study context per word</h2>
+          <div id="study-grid"></div> <!-- filled by buildStudyGrid() -->
+          <p class="legend">A Place A &middot; B Place B &middot; M Mood &middot; &#9834; Song &middot; &#9749; Smell</p>
+          <button class="secondary" data-preset="same">Same for all</button>
+          <button class="secondary" data-preset="split">Split A / B</button>
+          <button class="secondary" data-preset="none">None</button>
+          <button class="secondary" data-preset="random">Random</button>
+        </div>
+      </aside>
+
+      <main>
+        <div class="card">
+          <h2>Memories (click to inspect)</h2>
+          <div class="chips" id="chips"></div>
+          <div id="caption"></div>
+          <div class="meter"><span>Stored (trace intact)</span>
+            <div class="bar"><i id="bar-stored" class="c-muted"></i></div><span id="val-stored"></span></div>
+          <div class="meter"><span>Accessible, no cue</span>
+            <div class="bar"><i id="bar-nocue" class="c-blue"></i></div><span id="val-nocue"></span></div>
+          <div class="meter"><span>Accessible, with cues</span>
+            <div class="bar"><i id="bar-cued" class="c-green"></i></div><span id="val-cued"></span></div>
+        </div>
+
+        <div class="card"><h2>Context vectors (80 units)</h2>
+          <canvas id="cv-strips" style="height:132px"></canvas></div>
+        <div class="card"><h2>Retrieval race</h2>
+          <canvas id="cv-race"></canvas></div>
+        <div class="card"><h2>Reinstatement: what the last recall did to the context</h2>
+          <canvas id="cv-reinstate"></canvas></div>
+        <div class="card"><h2>Drift: overlap of each memory's stored context with the context at each event</h2>
+          <canvas id="cv-drift"></canvas></div>
+        <div class="card"><h2>Stored associations (item to context)</h2>
+          <canvas id="cv-matrix"></canvas></div>
+      </main>
+    </div>
+  </section>
+
+</div>
+
+  <script src="tcm.js"></script>
+  <script src="draw.js"></script>
+  <script src="explainer.js"></script>
+  <script src="sandbox.js"></script>
+</body>
+</html>
