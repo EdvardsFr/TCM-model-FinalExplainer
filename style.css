@@ -268,3 +268,15 @@ details.setting-group { border-top: 1px solid var(--border); padding: 6px 0; }
 details.setting-group:first-of-type { border-top: 0; }
 details.setting-group summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--muted); }
 details.setting-group[open] summary { margin-bottom: 4px; }
+
+/* ===== Tabs ===== */
+.tabs {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; gap: 6px;
+  padding: 10px 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.tab { margin: 0; background: transparent; color: var(--fg); border: 1px solid var(--border); font-weight: 500; }
+.tab[aria-selected="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+[role="tabpanel"][hidden] { display: none; }
