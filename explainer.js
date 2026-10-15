@@ -263,10 +263,9 @@ DEMOS.drift = root => {
 
 /** Section 4: studying stores the word together with the context it was studied in. */
 DEMOS.encode = root => {
-  const LIST = 6, LABEL = 120;
-  let world, tags;
-  const present = toggles('Present while studying:', [[0, 'Place A'], [1, 'Place B'], [3, 'Song']], () => {}, [0]);
-  const cv = canvas(262, 'Stored contexts of the studied words and how much they overlap');
+  const LIST = 6, LABEL = 120, TOP = 46;
+  let world, tags, pending;
+  const present = toggles('Present while studying:', [[0, 'Place A'], [1, 'Place B'], [3, 'Song']], () => draw(), [0]);  const cv = canvas(262 + TOP, 'Stored contexts of the studied words and how much they overlap');
   const note = readout();
   root.append(present.root,
     h('div', { class: 'button-row' },
@@ -277,13 +276,15 @@ DEMOS.encode = root => {
   function start() {
     world = new TCM.World(5);
     tags = [];
+    pending = world.randomUnit();
     draw();
   }
 
   function studyNext() {
     if (world.items.length >= LIST) return;
     const flags = present.flags();
-    world.encode(flags, WORDS[world.items.length]);
+    world.encode(flags, WORDS[world.items.length], pending);
+    pending = world.randomUnit();
     tags.push(flags.some(Boolean) ? FEATURE_SHORT.filter((_, k) => flags[k]).join('') : 'none');
     draw();
   }
@@ -294,19 +295,30 @@ DEMOS.encode = root => {
     g.font = '11px system-ui';
     g.textBaseline = 'alphabetic';
 
+    // The context the next word will be stored with: exactly what "Study next word" will do.
+    // "+3 events" moves the current context; the tick-boxes change the word's input.
+    const last = items[items.length - 1];
+    const input = world.withFeatures(pending, present.flags(), world.params.featStrength);
+    const next = TCM.updateContext(world.context, input, world.params.encDrift);
+    const since = last ? world.now - last.index : world.now;
+    const versus = last ? `   overlap with “${last.word}”: ${num2(dot(last.memory, next))}` : '';
+    g.fillStyle = textColor();
+    g.fillText(`Next word's context, ${since} event${since === 1 ? '' : 's'} since ${last ? 'the last word' : 'the start'}${versus}`, 0, 11);
+    drawVector(g, next, LABEL, 16, w - LABEL, 14, 5);
+
     // Stored contexts: one strip per word.
     items.forEach((item, i) => {
       g.fillStyle = textColor();
-      g.fillText(`${item.word}  (${tags[i]})`, 0, i * 16 + 11);
-      drawVector(g, item.memory, LABEL, i * 16, w - LABEL, 14, 5);
+      g.fillText(`${item.word}  (${tags[i]})`, 0, TOP + i * 16 + 11);
+      drawVector(g, item.memory, LABEL, TOP + i * 16, w - LABEL, 14, 5);
     });
     if (!items.length) {
       g.fillStyle = textColor();
-      g.fillText('Nothing studied yet. Press “Study next word”.', 0, 12);
+      g.fillText('Nothing studied yet. Press “Study next word”.', 0, TOP + 12);
     }
 
     // How alike the stored contexts are.
-    const top = LIST * 16 + 18;
+    const top = TOP + LIST * 16 + 18;
     g.fillStyle = textColor();
     g.fillText('How alike are the stored contexts? (overlap)', 0, top);
     const cw = (w - LABEL) / LIST, ch = 20;

@@ -280,6 +280,10 @@
           <button class="secondary" id="btn-wait-1">+1 event</button>
           <button class="secondary" id="btn-wait-5">+5 events</button>
           <button class="secondary" id="btn-wait-20">+20 events</button>
+          <div class="skip-custom">
+            <input type="number" id="wait-custom" value="10" min="1" max="500" step="1" aria-label="Number of events to skip">
+            <button class="secondary" id="btn-wait-custom">Skip events</button>
+          </div>
         </div>
 
         <div class="card">
@@ -295,7 +299,14 @@
 
         <div class="card">
           <h2>Model settings</h2>
-          <div id="sliders"></div> <!-- filled by buildSliders() in sandbox.js -->
+          <details class="setting-group">
+            <summary>Standard settings</summary>
+            <div id="sliders-standard"></div> <!-- filled by buildSliders() in sandbox.js -->
+          </details>
+          <details class="setting-group">
+            <summary>Advanced settings</summary>
+            <div id="sliders-advanced"></div>
+          </details>
         </div>
 
         <div class="card">
@@ -321,12 +332,13 @@
           <h2>Memories (click to inspect)</h2>
           <div class="chips" id="chips"></div>
           <div id="caption"></div>
-          <div class="meter"><span>Stored (trace intact)</span>
+          <!-- <div class="meter"><span>Stored (trace intact)</span>
             <div class="bar"><i id="bar-stored" class="c-muted"></i></div><span id="val-stored"></span></div>
           <div class="meter"><span>Accessible, no cue</span>
             <div class="bar"><i id="bar-nocue" class="c-blue"></i></div><span id="val-nocue"></span></div>
           <div class="meter"><span>Accessible, with cues</span>
-            <div class="bar"><i id="bar-cued" class="c-green"></i></div><span id="val-cued"></span></div>
+            <div class="bar"><i id="bar-cued" class="c-green"></i></div><span id="val-cued"></span></div> -->
+          <div id="decay-meters"></div> <!-- one bar per memory, filled by drawDecayMeters() -->
         </div>
 
         <div class="card"><h2>Context vectors (80 units)</h2>
@@ -335,8 +347,8 @@
           <canvas id="cv-race"></canvas></div>
         <div class="card"><h2>Reinstatement: what the last recall did to the context</h2>
           <canvas id="cv-reinstate"></canvas></div>
-        <div class="card"><h2>Drift: overlap of each memory's stored context with the context at each event</h2>
-          <canvas id="cv-drift"></canvas></div>
+        <!-- <div class="card"><h2>Drift: overlap of each memory's stored context with the context at each event</h2>
+          <canvas id="cv-drift"></canvas></div> -->
         <div class="card"><h2>Stored associations (item to context)</h2>
           <canvas id="cv-matrix"></canvas></div>
       </main>

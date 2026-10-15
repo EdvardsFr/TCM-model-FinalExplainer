@@ -25,15 +25,16 @@
  * which only the interface uses).
  */
 const SLIDERS = [
-  { id: 'items',        label: 'List length (max words)',                  min: 4,    max: 12,   step: 1,     value: 8    },
-  { id: 'encDrift',     label: 'Encoding drift β (per studied word)', min: 0.1,  max: 0.9,  step: 0.05,  value: 0.6  },
-  { id: 'waitDrift',    label: 'Drift per event β',                   min: 0.05, max: 0.9,  step: 0.05,  value: 0.45 },
-  { id: 'reinstate',    label: 'Reinstatement β',                     min: 0,    max: 0.9,  step: 0.05,  value: 0.5  },
-  { id: 'featStrength', label: 'Feature strength',                         min: 0,    max: 2,    step: 0.1,   value: 1    },
-  { id: 'cueWeight',    label: 'Cue weight',                               min: 0,    max: 3,    step: 0.1,   value: 1.5  },
-  { id: 'noise',        label: 'Noise',                                    min: 0,    max: 1,    step: 0.05,  value: 0.3  },
-  { id: 'competition',  label: 'Competition',                              min: 0,    max: 0.4,  step: 0.02,  value: 0.1  },
-  { id: 'decay',        label: 'True trace decay / event',                 min: 0,    max: 0.05, step: 0.005, value: 0    },
+  // group: 'standard' or 'advanced'
+  { id: 'items',        group: 'standard', label: 'List length (max words)',             min: 4,    max: 12,   step: 1,     value: 8    },
+  { id: 'waitDrift',    group: 'standard', label: 'Drift per event β',              min: 0.05, max: 0.9,  step: 0.05,  value: 0.45 },
+  { id: 'cueWeight',    group: 'standard', label: 'Cue weight',                          min: 0,    max: 3,    step: 0.1,   value: 1.5  },
+  { id: 'noise',        group: 'standard', label: 'Noise',                               min: 0,    max: 1,    step: 0.05,  value: 0.3  },
+  { id: 'decay',        group: 'advanced', label: 'True trace decay / event',            min: 0,    max: 0.05, step: 0.005, value: 0    },
+  { id: 'encDrift',     group: 'advanced', label: 'Encoding drift β (per studied word)', min: 0.1,  max: 0.9,  step: 0.05,  value: 0.6  },
+  { id: 'reinstate',    group: 'advanced', label: 'Reinstatement β',                min: 0,    max: 0.9,  step: 0.05,  value: 0.5  },
+  { id: 'featStrength', group: 'advanced', label: 'Feature strength',                    min: 0,    max: 2,    step: 0.1,   value: 1    },
+  { id: 'competition',  group: 'advanced', label: 'Competition',                         min: 0,    max: 0.4,  step: 0.02,  value: 0.1  },
 ];
 
 /** How many race steps run per animation frame (the test's playback speed). */
@@ -127,6 +128,15 @@ function addEvents(count) {
   redraw();
 }
 
+/** Skip the number of events typed in the box. The number stays there for the next click. */
+function skipCustom() {
+  const box = $('wait-custom');
+  const n = Math.min(500, Math.floor(+box.value));
+  if (!(n >= 1)) return;          // empty, zero or negative: do nothing
+  box.value = n;                  // tidy up decimals or values over 500
+  addEvents(n);
+}
+
 /** Begin a recall test from the current context. */
 function startTest() {
   if (!world.items.length) return;
@@ -181,7 +191,7 @@ function stepRace() {
 function sizeCanvases() {
   const n = world.items.length;
   $('cv-matrix').style.height = n * LAYOUT.matrixRow + 'px';
-  $('cv-drift').style.height = n * LAYOUT.matrixRow + 'px';
+  // $('cv-drift').style.height = n * LAYOUT.matrixRow + 'px';
   $('cv-race').style.height = n * LAYOUT.raceRow + 'px';
   $('cv-reinstate').style.height = reinstateHeight(n) + 'px';
 }
@@ -221,19 +231,19 @@ function drawMeters() {
   const n = items.length;
 
   if (!n) {
-    ['stored', 'nocue', 'cued'].forEach(name => {
-      $(`bar-${name}`).style.width = '0%';
-      $(`val-${name}`).textContent = '';
-    });
+    // ['stored', 'nocue', 'cued'].forEach(name => {
+    //   $(`bar-${name}`).style.width = '0%';
+    //   $(`val-${name}`).textContent = '';
+    // });
     $('caption').innerHTML = 'No words studied yet. Press <b>Study next</b> to encode the first word.';
     return;
   }
 
   const m = world.meters(activeContext(), cueFlags());
-  [['stored', m.stored], ['nocue', m.nocue], ['cued', m.cued]].forEach(([name, v]) => {
-    $(`bar-${name}`).style.width = Math.min(100, v * 100) + '%';
-    $(`val-${name}`).textContent = Math.floor(v * 100) + '%';
-  });
+  // [['stored', m.stored], ['nocue', m.nocue], ['cued', m.cued]].forEach(([name, v]) => {
+  //   $(`bar-${name}`).style.width = Math.min(100, v * 100) + '%';
+  //   $(`val-${name}`).textContent = Math.floor(v * 100) + '%';
+  // });
 
   const eventsSinceStudy = world.now - items[n - 1].index;
   if (T && T.over) {
@@ -251,6 +261,17 @@ function drawMeters() {
   } else {
     $('caption').innerHTML = `${n} word${n > 1 ? 's' : ''} studied, ${eventsSinceStudy} events since the last one. Press <b>Start test</b>.`;
   }
+}
+
+/** One bar: trace strength of the selected memory, (1 - decay) ^ events since it was studied. */
+function drawDecayMeters() {
+  const item = world.items[state.selected];
+  if (!item) { $('decay-meters').innerHTML = ''; return; }
+  const v = world.traceStrength(state.selected);
+  $('decay-meters').innerHTML =
+    `<div class="meter wide"><span>Trace strength: ${item.word}</span>` +
+    `<div class="bar"><i class="c-muted" style="width:${Math.min(100, v * 100)}%"></i></div>` +
+    `<span>${Math.round(v * 100)}%</span></div>`;
 }
 
 /** Strips: stored context of the selected item, current (or test) context, cue. */
@@ -287,27 +308,27 @@ function drawMatrix() {
 }
 
 /** Drift heatmap: accessibility of each item from the context at every event. */
-function drawDrift() {
-  const [g, w, h] = setupCanvas('cv-drift');
-  if (!world.items.length) return;
-  const events = world.history.length;
-  const cellW = (w - LAYOUT.labelWidth) / events;
-  g.font = '11px system-ui';
+// function drawDrift() {
+//   const [g, w, h] = setupCanvas('cv-drift');
+//   if (!world.items.length) return;
+//   const events = world.history.length;
+//   const cellW = (w - LAYOUT.labelWidth) / events;
+//   g.font = '11px system-ui';
 
-  world.items.forEach((item, i) => {
-    g.fillStyle = textColor();
-    g.fillText(item.word, 0, i * LAYOUT.matrixRow + 10);
-    for (let t = item.index; t < events; t++) {
-      g.fillStyle = cellColor(world.accessibility(i, world.history[t].context, null, t), 1.3);
-      g.fillRect(LAYOUT.labelWidth + t * cellW, i * LAYOUT.matrixRow, cellW + 0.5, 13);
-    }
-  });
+//   world.items.forEach((item, i) => {
+//     g.fillStyle = textColor();
+//     g.fillText(item.word, 0, i * LAYOUT.matrixRow + 10);
+//     for (let t = item.index; t < events; t++) {
+//       g.fillStyle = cellColor(world.accessibility(i, world.history[t].context, null, t), 1.3);
+//       g.fillRect(LAYOUT.labelWidth + t * cellW, i * LAYOUT.matrixRow, cellW + 0.5, 13);
+//     }
+//   });
 
-  // Outline the span since the first word was studied.
-  const first = world.items[0].index;
-  g.strokeStyle = COLORS.orange;
-  g.strokeRect(LAYOUT.labelWidth + first * cellW, 0, (events - first) * cellW, h);
-}
+//   // Outline the span since the first word was studied.
+//   const first = world.items[0].index;
+//   g.strokeStyle = COLORS.orange;
+//   g.strokeRect(LAYOUT.labelWidth + first * cellW, 0, (events - first) * cellW, h);
+// }
 
 /** Retrieval race: one bar per item; orange line = threshold. */
 function drawRace() {
@@ -356,9 +377,10 @@ function redraw() {
   updateControls();
   drawChips();
   drawMeters();
+  drawDecayMeters();
   drawStrips();
   drawMatrix();
-  drawDrift();
+  // drawDrift();
   drawRace();
   drawReinstatement();
 }
@@ -368,11 +390,17 @@ function redraw() {
    5. UI CONSTRUCTION
    ===================================================================== */
 
-function buildSliders() {
-  $('sliders').innerHTML = SLIDERS.map(s => `
+function sliderHtml(s) {
+  return `
     <label>${s.label}<output id="out-${s.id}">${s.value}</output></label>
-    <input type="range" id="${s.id}" min="${s.min}" max="${s.max}" step="${s.step}" value="${s.value}">
-  `).join('');
+    <input type="range" id="${s.id}" min="${s.min}" max="${s.max}" step="${s.step}" value="${s.value}">`;
+}
+
+/** Fill the two drop-downs (#sliders-standard and #sliders-advanced) from SLIDERS. */
+function buildSliders() {
+  ['standard', 'advanced'].forEach(group => {
+    $('sliders-' + group).innerHTML = SLIDERS.filter(s => s.group === group).map(sliderHtml).join('');
+  });
 }
 
 /** One row per feature: tick "wait" (present during wait & test) and "cue". */
@@ -429,6 +457,8 @@ function wireEvents() {
   $('btn-wait-1').onclick = () => addEvents(1);
   $('btn-wait-5').onclick = () => addEvents(5);
   $('btn-wait-20').onclick = () => addEvents(20);
+  $('btn-wait-custom').onclick = skipCustom;
+  $('wait-custom').addEventListener('keydown', e => { if (e.key === 'Enter') skipCustom(); });
 
   // Test recall
   $('btn-test').onclick = startTest;

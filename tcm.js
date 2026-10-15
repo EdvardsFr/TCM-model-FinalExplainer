@@ -130,8 +130,8 @@ const TCM = (() => {
      * Study the next word. It arrives as a random input plus the features in
      * `flags`. The context after the update is stored with the word.
      */
-    encode(flags = null, word = WORDS[this.items.length]) {
-      const input = this.withFeatures(this.randomUnit(), flags, this.params.featStrength);
+    encode(flags = null, word = WORDS[this.items.length], noise = this.randomUnit()) {
+      const input = this.withFeatures(noise, flags, this.params.featStrength);
       this.context = updateContext(this.context, input, this.params.encDrift);
       const item = { word, memory: this.context, index: this.history.length };
       this.items.push(item);
