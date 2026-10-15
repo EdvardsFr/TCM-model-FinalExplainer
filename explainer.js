@@ -127,7 +127,7 @@ DEMOS.available = root => {
   const time  = slider('Events since the words were studied', 0, MAX, 1, 15, update);
   const decay = checkbox('Let the traces themselves fade (real forgetting)', update);
   const stored = meter('Stored in memory', 'c-muted');
-  const nocue  = meter('Reachable, no cue', 'c-blue');
+  const nocue  = meter('Reachable, no cue', 'c-result');
   const cued   = meter('Reachable with the right cue', 'c-green');
   const note   = readout();
   root.append(time.row, decay.root, stored.root, nocue.root, cued.root, note);
@@ -360,7 +360,7 @@ DEMOS.cues = root => {
   const studyT = toggles('Present when the words were studied:', OPTIONS, draw, [0, 3]);
   const cueT   = toggles('Added to the cue at test:', OPTIONS, draw, []);
   const cv = canvas(136, 'Stored context, current context and cue');
-  const mNow = meter('Current context alone', 'c-blue', NEEDED);
+  const mNow = meter('Current context alone', 'c-result', NEEDED);
   const mCue = meter('Cue with chosen features', 'c-green', NEEDED);
   const note = readout();
   root.append(studyT.root, cueT.root, cv, mNow.root, mCue.root, note);
@@ -471,7 +471,7 @@ DEMOS.race = root => {
       g.fillText(item.word, 0, y + rowH / 2);
       g.fillStyle = COLORS.track;
       g.fillRect(left, y + 3, barW, rowH - 6);
-      g.fillStyle = winner === i ? COLORS.green : COLORS.blue;
+      g.fillStyle = winner === i ? COLORS.green : COLORS.result;
       g.fillRect(left, y + 3, winner === i ? barW : Math.min(1, x / (2 * RACE.threshold)) * barW, rowH - 6);
       g.fillStyle = textColor();
       g.fillText(`pull ${p[i].toFixed(1)}`, left + barW + 8, y + rowH / 2);

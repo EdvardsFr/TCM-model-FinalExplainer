@@ -18,6 +18,7 @@
   --card: #ffffff;
   --border: #e3e5ea;
   --accent: #2f6fed;
+  --result: #8854d0;
   --ok: #1f9d63;
   --warn: #c8630f;          /* the orange "threshold" line and notes */
 
@@ -32,6 +33,7 @@
     --card: #1c2029;
     --border: #2d3340;
     --accent: #6b9bff;
+    --result: #a98af0;
     --ok: #43c487;
     --warn: #f0a05a;
     color-scheme: dark;
@@ -44,6 +46,7 @@
   --card: #1c2029;
   --border: #2d3340;
   --accent: #6b9bff;
+  --result: #a98af0;
   --ok: #43c487;
   --warn: #f0a05a;
   color-scheme: dark;
@@ -256,3 +259,12 @@ th { color: var(--muted); font-weight: 600; }
 .c-muted { background: var(--muted); }
 .c-blue  { background: var(--accent); }
 .c-green { background: var(--ok); }
+.c-result { background: var(--result); }
+
+/* ===== Custom skip and grouped settings ===== */
+.skip-custom { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+.skip-custom button { margin: 0; }
+details.setting-group { border-top: 1px solid var(--border); padding: 6px 0; }
+details.setting-group:first-of-type { border-top: 0; }
+details.setting-group summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--muted); }
+details.setting-group[open] summary { margin-bottom: 4px; }

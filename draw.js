@@ -40,9 +40,9 @@ const LAYOUT = {
 
 /** Colours used on the canvases (the page's own text colour is read from CSS). */
 const COLORS = {
-  positive: [47, 111, 237],   // blue cells
+  positive: [136, 84, 208],   // purple cells
   negative: [230, 126, 34],   // orange cells
-  blue: '#2f6fed',
+  result: '#8854d0',
   green: '#1f9d63',
   orange: '#e67e22',
   grey: '#99a1b3',

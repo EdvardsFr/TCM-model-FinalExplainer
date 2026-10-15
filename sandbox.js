@@ -351,7 +351,7 @@ function drawRace() {
     g.fillStyle = COLORS.track;
     g.fillRect(left, y + 4, barW, rowH - 8);
 
-    g.fillStyle = rank >= 0 ? COLORS.green : COLORS.blue;
+    g.fillStyle = rank >= 0 ? COLORS.green : COLORS.result;
     const fill = rank >= 0 ? barW : Math.min(1, x / (2 * RACE.threshold)) * barW;
     g.fillRect(left, y + 4, fill, rowH - 8);
 
