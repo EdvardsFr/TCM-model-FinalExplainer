@@ -35,24 +35,50 @@
       </p>
     </header>
 
+    <section class="story" id="part-intro">
+      <div class="story-text">
+        <p class="step">1 &middot; Introduction</p>
+        <p>
+          This interactive explainer will focus on memory retrieval and where this memory retrieval can fail, 
+          so how a memory can become temporarily inaccessible without being lost. First a baseline for memory 
+          formation is needed. Memories are formed in three distinct steps, these being <b>encoding</b>, <b>storage/consolidation</b> 
+          and <b>decoding</b>.
+        </p>
+        <p>
+          When you come across a piece of information that needs to be remembered the brain takes in all the context 
+          of the situation. Say that you meet a person in the hallway, in order to form a memory the brain records 
+          the voice, appearance, emotion, time and place for example. The pattern of neural activity representing this context is stored alongside
+          the memory.
+        </p>
+        <p>
+          In order to produce retrieval, your brain needs to recreate the pattern of neural activity associated with a memory. 
+          <b>Retrieval failure</b> is the case where this pattern cannot be recreated. This might be because over time your neural activity
+          changes (<b>context drift</b>), and you lack a strong enough cue to return back to a similar pattern of activity. This is what the
+          <b>Temporal Context Model (TCM)</b> illustrates.
+        </p>
+      </div>
+    </section>
+    
     <section class="story" id="part-available">
       <div class="story-text">
-        <p class="step">1 &middot; The big idea</p>
+        <p class="step">2 &middot; The big idea</p>
         <h2>Stored is not the same as reachable</h2>
         <p>
-          Every memory raises two separate questions. Is it still stored? And can you get to it right now?
-          The psychologist Endel Tulving called these <b>availability</b> and <b>accessibility</b>. They usually go
-          together, so we rarely notice the difference. But they can come apart, and when they do, you forget
-          something that is still there.
+          As mentioned this explainer will focus on retrieval failure, which can be shown using the widget on the right. 
+          This widget is very fundamentally what this whole model shows. It learns a list of words, which is shown in the 
+          grey bar. All of these words are stored with the context of when they were learned. The purple bar represents how 
+          many of these memories can be retrieved without any cues. The way this happens is a comparison between the current 
+          context after multiple events and the context of each word. If the current context and the stored context are similar 
+          enough the memory can be recalled. The green bar represents the case in which we give a little hint like the first 
+          letter of someone's name for example. Lastly, the box called real forgetting will turn on decay which will affect 
+          the strength of the memory this leads to it being harder to recall in general.
         </p>
         <p>
-          That is retrieval cue failure. The trace is intact, but nothing in your current situation points to it.
-          Give it the right cue and it comes straight back.
+          The real forgetting tickable box is represented in the sandbox mode using “True trace decay / event”
         </p>
         <p>
-          On the right, the grey bar is what is stored. The purple bar is what can be reached from where your mind is
-          now. The green bar is what can be reached with the right cue. Tick the box to see real forgetting for
-          comparison: the grey bar itself starts to fall, and no cue can bring back what is gone.
+          The point of this little widget is to showcase that letting events pass will result in the context drifting which affects 
+          how effective recall is. 
         </p>
       </div>
       <figure class="figure">
@@ -63,20 +89,28 @@
 
     <section class="story" id="part-context">
       <div class="story-text">
-        <p class="step">2 &middot; Context</p>
+        <p class="step">3 &middot; Context</p>
         <h2>A context is a pattern, and overlap says how alike two patterns are</h2>
         <p>
-          The model is called the Temporal Context Model. Its central idea is that your mind always has a
-          <b>context</b>: a running snapshot of everything going on at the moment, such as where you are, how you
-          feel and what you were just thinking about. In the model, a context is a list of 80 numbers. Purple cells
-          are positive and orange cells are negative.
+          So all items are stored with their context, but how is this context stored? It is simply a vector/list of 
+          80 numbers which can range from -1 to 1. In this explainer it will be showcased using this line of boxes with 
+          the <b>orange boxes being negative</b> and the <b>purple boxes being positive values</b>.
         </p>
         <p>
-          No single cell means anything. What matters is the whole pattern, and how much two patterns
-          <b>overlap</b>. Overlap runs from 1 (identical) down to about 0 (unrelated). Two unrelated random patterns
-          still overlap by a little, up to about 0.1 either way. That is the noise floor of the model.
+          This context consists of all types of information like your location, the time and your emotion for example. 
+          It is important to note that one value does not correspond to one aspect of the context. Instead it is a pattern 
+          that forms this information. 
         </p>
-        <p>Everything that follows is built on this one measurement.</p>
+        <p>
+          So we cannot extract very specific information from these values, but what is most important is the overlap between 
+          the two contexts. This is calculated using the dot product between the current context and the item context. The dot product 
+          can theoretically range from -1 to 1. However, with an 80-dimensional vector the odds of two random vectors having a dot product
+          below even -0.05 are small, so completely unrelated vectors will usually have an overlap of approximately 0.
+        </p>
+        <p>
+          The widget can alter pattern B depending on how strong the overlap is which can be changed with the slider. 
+          From this you can see that the pattern becomes the exact same for 1 or totally different for 0.
+        </p>
       </div>
       <figure class="figure">
         <div class="demo" data-demo="context"></div>
@@ -86,7 +120,7 @@
 
     <section class="story" id="part-drift">
       <div class="story-text">
-        <p class="step">3 &middot; Drift</p>
+        <p class="step">4 &middot; Drift</p>
         <h2>Every event pushes the context a little further away</h2>
         <p>
           Life does not pause. Each new event brings something new into your head, and the context shifts to make
@@ -94,14 +128,21 @@
         </p>
         <p class="formula">t<sub>new</sub> = &rho; &middot; t<sub>old</sub> + &beta; &middot; t<sub>input</sub></p>
         <p>
-          &beta; is how strongly the new event pushes. &rho; is chosen automatically so the pattern stays the same
-          size, which means a larger &beta; pushes out more of the old context.
+          t stands for the context vector, with t<sub>new</sub> being the updated context vector, t<sub>old</sub> being the old context vector and 
+          t<sub>input</sub> representing the new context that will be added. &beta; is how strongly the new event pushes. &rho; is chosen automatically 
+          so the pattern stays the same size, which means a larger &beta; pushes out more of the old context.
         </p>
         <p>
           Nothing is erased. The old context is simply diluted, event after event. The bottom strip on the right
           shows the overlap between the context when a word was studied and the context now. It fades, but at no
-          point is anything deleted. As the context drifts it stops pointing at the memories that were stored in it.
-          That is the whole mechanism of forgetting in this model.
+          point is anything deleted.
+        </p>
+        <p>
+          In the widget the original context can be seen in the top bar, the context bar below that one is the current context. 
+          After letting time pass through clicking the event buttons the context will shift and the overlap will decrease slowly. 
+          The slider controls the beta variable so how quickly new context input gets taken up. The higher beta is the more the 
+          context drifts. Additionally the second bar lists the current overlap and there is also a bar that shows the overlap 
+          per event. With bright purple being high overlap and low saturation being low overlap. 
         </p>
       </div>
       <figure class="figure">
@@ -112,20 +153,29 @@
 
     <section class="story" id="part-encode">
       <div class="story-text">
-        <p class="step">4 &middot; Studying</p>
+        <p class="step">5 &middot; Studying</p>
         <h2>A word is stored together with its context</h2>
         <p>
-          When you study a word, the model records the context at that moment next to the word. That pairing is the
-          memory trace. It is written once and never changes.
+          Till now we looked at how context is stored and how drift works, but say we study a list of words the same 
+          things we saw earlier have an effect on how it is studied. Firstly since drift is updated every event, words 
+          learned close together will have more overlap than words studied farther apart. 
         </p>
         <p>
-          Two things follow. First, words studied one after another get similar contexts, because the context only
-          drifts a little between them. In the grid on the right, neighbouring words overlap strongly and distant
-          words barely do.
+          Additionally a cue/event, like mentioned in the part “the big idea” can leave its “fingerprints” on the context. 
+          Basically meaning that the event will produce a pattern that is similar across all words so the overlap will be bigger. 
         </p>
         <p>
-          Second, anything present while you study, such as a place or a song, leaves its fingerprint in the context
-          of every word studied there. That fingerprint is what a cue can later latch onto.
+          To showcase both of these phenomena we can work toward it using the widget here. Firstly on the top we can select 
+          which event was present while learning. Words with the same ticked events will have a much higher overlap. Below 
+          this we can study the next word or add 3 events or start over. Then we see the context bar for the current word that 
+          will be studied when clicking “study next word”. When adding events you can see that the context shifts because the 
+          pattern changes. Additionally above the bar it will mention the overlap with the previous word if 1 word was already studied.
+        </p>
+        <p>
+          The real important part of this widget is the overlap table, which shows the overlap between the different words. We can 
+          see the diagonal that is the overlap between the same word, then close to this diagonal are the words studied recently. 
+          What is important to see here is that as long as the words have been studied close to each other the overlap is very high. 
+          However, with this widget we can test the effect of drift and also the effect of different events for different words. 
         </p>
       </div>
       <figure class="figure">
@@ -136,7 +186,7 @@
 
     <section class="story" id="part-cues">
       <div class="story-text">
-        <p class="step">5 &middot; Cues</p>
+        <p class="step">6 &middot; Cues</p>
         <h2>A cue works only if it was part of the memory</h2>
         <p>
           To get a word back, the model uses a <b>cue</b>: the current context, plus anything you deliberately bring
@@ -150,7 +200,14 @@
           Place B was never there, so a Place B cue overlaps with nothing and adds nothing.
         </p>
         <p>
-          The orange line on the bars marks roughly how much overlap a word needs to win the race described next.
+          This widget shows the possible selections for present cues during learning and possible cues during recall. 
+          Then there are three context bars, the first one shows the context of the 4 words, the second shows the context 
+          after 20 events, the last bar shows the context after 20 events with the cue vector added. Then there are two bars 
+          which show the probability of recall happening with and without the cue. The orange line on the bars marks a threshold 
+          that needs to be passed in order to win the race described next.
+        </p>
+        <p>
+          It aims to show clearly how a cue can add to the recall and how a cue that is not there during encoding will not affect recall. 
         </p>
       </div>
       <figure class="figure">
@@ -161,18 +218,35 @@
 
     <section class="story" id="part-race">
       <div class="story-text">
-        <p class="step">6 &middot; Retrieval</p>
+        <p class="step">7 &middot; Retrieval</p>
         <h2>Recall is a noisy race between memories</h2>
         <p>
-          Overlap sets how hard the cue pulls on each word. Every word has an activation that rises under that pull,
-          leaks away over time, is held back by competition from the other words, and is jostled by noise. The first
-          word to cross the threshold is recalled.
+          Till now we only looked at context and cues how they affect overlap, but now we will see how recall is actually simulated. 
+          All words in the list have an activation value, which is iteratively nudged upward using a combination of variables. 
+          Simply said the overlap and strength of the memory affect the pull value. The activation value rises with this pull value, 
+          but also leaks away over time and is held back by competition. Lastly, it is also jostled by noise so recall is still 
+          slightly random and not fully deterministic. The first activation value to reach the threshold of 1 will be recalled. 
+          If no value reaches the threshold after 120 steps the race will stop and recall has failed.
         </p>
         <p>
-          Because of the noise, the same setup can give a different winner each time. But when the pull is far below
-          the threshold, as it is for a cue that does not match, no amount of waiting helps. The memories are stored
-          and the race still never produces a winner. That is retrieval cue failure, produced by the model instead of
-          written into it.
+          What we can actually see in the widget is the option to choose the cue that is present. Then a progress bar for each 
+          word with the orange line being the threshold, once it passes the threshold it becomes green and completes fully to 
+          represent successful recall.
+        </p>
+        <h2>Deeper math</h2>
+        <p>
+          The true formula used is:
+        </p>
+        <p class="formula">x(t+1) = x(t) + (pull - x(t) - comp) · &delta;t + noise_term</p>
+        <p>
+          x is the activation value and it is the variable that is supposed to reach 1. The pull variable is the main driving force 
+          towards an activation of 1. It is calculated using gain · strength · overlap. The standard gain is 2.5 and the standard 
+          strength is 1. The gain cannot be changed in the sandbox, but the strength can by altering the true trace decay. The second 
+          x(t) is the leak factor which scales it so that it slows down at higher activation values. Then there is the comp variable 
+          which consists of competition · sum of other activations. This represents the competition between the different memories. 
+          Each step is a small slice of time (&delta;t), and in each slice activation changes by only a small fraction of the net push: 
+          pull minus leak minus competition. The &delta;t value is 0.05 and lastly there is the noise_term, which is noise · sqrt(&delta;t) · epsilon. 
+          Epsilon is a standard normal random number which mostly falls between -2 and 2 and the noise variable has a value of 0.3. 
         </p>
       </div>
       <figure class="figure">
@@ -183,10 +257,10 @@
 
     <section class="story" id="part-reinstate">
       <div class="story-text">
-        <p class="step">7 &middot; Reinstatement</p>
+        <p class="step">8 &middot; Reinstatement</p>
         <h2>Remembering one word moves you towards its neighbours</h2>
         <p>
-          When a word wins, the model does more than output it. The word&rsquo;s stored context is blended back into
+          When a word wins, the model does more than output it. The word's stored context is blended back into
           the current context. For a moment, the mind is partly back in the situation where the word was studied.
         </p>
         <p>
@@ -196,8 +270,20 @@
           clusters that follow the original order.
         </p>
         <p>
-          In the chart, grey bars show accessibility before the recall and green bars show it after. Any word whose
-          green bar passes the orange line is now likely to win.
+          This reinstatement variable is very similar to the drift variable since it follows the same formula. 
+          So a high reinstatement will mean the input context (the context of the word that was just recalled) has a 
+          high effect on the new context. 
+        </p>
+        <p>
+          In the widget you can recall a word by clicking on it and in the context bar you can see the before and after the 
+          recall. You can see how the pattern changes and the overlap value. 
+        </p>
+        <p>
+          On the bottom the grey bars corresponding to each word show the accessibility which is strength x overlap before 
+          reinstatement happened. Then the green bar shows accessibility after reinstatement happened due to the earlier recall.
+        </p>
+        <p>
+          This part adds the final aspect of this simulation which is the effect of recall on the current context.
         </p>
       </div>
       <figure class="figure">
