@@ -21,6 +21,7 @@
   --result: #8854d0;
   --ok: #1f9d63;
   --warn: #c8630f;          /* the orange "threshold" line and notes */
+  --sticky-top: 72px;       /* where sticky things stop: just below the top bar (about 58px tall) */
 
   --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
@@ -148,7 +149,7 @@ ol.plain li { margin-bottom: 8px; font-size: 16px; line-height: 1.6; }
   border-radius: 12px;
   padding: 14px;
 }
-@media (min-width: 861px) { .figure { position: sticky; top: calc(16px + env(safe-area-inset-top, 0px)); } }
+@media (min-width: 861px) { .figure { position: sticky; top: calc(var(--sticky-top) + env(safe-area-inset-top, 0px)); } }
 .figure figcaption { margin-top: 12px; font-size: 13px; color: var(--muted); }
 .demo > * + * { margin-top: 10px; }
 
@@ -269,14 +270,100 @@ details.setting-group:first-of-type { border-top: 0; }
 details.setting-group summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--muted); }
 details.setting-group[open] summary { margin-bottom: 4px; }
 
-/* ===== Tabs ===== */
-.tabs {
+/* ===== Top bar: tabs on the left, light/dark switch on the right ===== */
+.topbar {
   position: sticky; top: 0; z-index: 10;
-  display: flex; gap: 6px;
+  display: flex; align-items: center; justify-content: space-between; gap: 6px;
   padding: 10px 0;
   background: var(--bg);
   border-bottom: 1px solid var(--border);
 }
-.tab { margin: 0; background: transparent; color: var(--fg); border: 1px solid var(--border); font-weight: 500; }
+.tabs { display: flex; gap: 6px; }
+.tab, .theme-toggle { margin: 0; background: transparent; color: var(--fg); border: 1px solid var(--border); font-weight: 500; }
 .tab[aria-selected="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+.theme-toggle { display: inline-flex; align-items: center; justify-content: center; padding: 6px 9px; }
 [role="tabpanel"][hidden] { display: none; }
+
+/* ===== Help icon: <span class="help" data-help="text"></span> (built by ui.js) ===== */
+.help {
+  display: inline-flex;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+
+.help-btn {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  font: 600 12px/1 var(--font-body);
+  cursor: pointer;
+}
+
+.help-btn:hover,
+.help-btn:focus-visible {
+  background: var(--accent);
+  color: #fff;
+}
+
+.help-pop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 20;
+  display: none;
+  width: max-content;
+  max-width: min(280px, 80vw);
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--fg);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, .18);
+  font: 400 13px/1.5 var(--font-body);
+  text-align: left;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* Show the tooltip only when the actual button is hovered or focused. */
+.help-btn:hover + .help-pop,
+.help-btn:focus-visible + .help-pop {
+  display: block;
+}
+
+/* ===== Chapter sidebar (explainer) ===== */
+.explainer-layout { display: grid; grid-template-columns: minmax(0, 1fr); }
+.toc { margin-top: 12px; }
+.toc-title { margin: 0 0 8px; font: 500 12px/1.4 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.toc ol { list-style: none; margin: 0; padding: 0; display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }   /* narrow screens: a scrolling row */
+.toc a {
+  display: block; white-space: nowrap;
+  padding: 6px 12px;
+  border: 1px solid var(--border); border-radius: 999px;
+  color: var(--fg); text-decoration: none; font-size: 13px;
+}
+.toc a:hover { border-color: var(--accent); }
+.toc a[aria-current="true"] { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.story, .guide-wide { scroll-margin-top: var(--sticky-top); }   /* keep headings clear of the sticky top bar */
+
+@media (min-width: 1100px) {                       /* wide screens: a sticky list on the left */
+  .explainer-layout { grid-template-columns: 190px minmax(0, 1fr); gap: 32px; }
+  .toc { position: sticky; top: var(--sticky-top); align-self: start; margin-top: 56px; max-height: calc(100vh - 88px); overflow-y: auto; }
+  .toc ol { display: block; overflow: visible; }
+  .toc a { white-space: normal; border: 0; border-left: 2px solid var(--border); border-radius: 0; padding: 6px 10px; }
+  .toc a:hover, .toc a[aria-current="true"] { border-left-color: var(--accent); }
+}
+
+/* ===== Slider name, help icon and value on one line ===== */
+.slider-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; font-size: 13px; }
+.slider-name { display: inline-flex; align-items: center; min-width: 0; }
+.slider-name label { margin: 0; }

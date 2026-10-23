@@ -26,15 +26,24 @@
  */
 const SLIDERS = [
   // group: 'standard' or 'advanced'
-  { id: 'items',        group: 'standard', label: 'List length (max words)',             min: 4,    max: 12,   step: 1,     value: 8    },
-  { id: 'waitDrift',    group: 'standard', label: 'Drift per event β',              min: 0.05, max: 0.9,  step: 0.05,  value: 0.45 },
-  { id: 'cueWeight',    group: 'standard', label: 'Cue weight',                          min: 0,    max: 3,    step: 0.1,   value: 1.5  },
-  { id: 'noise',        group: 'standard', label: 'Noise',                               min: 0,    max: 1,    step: 0.05,  value: 0.3  },
-  { id: 'decay',        group: 'advanced', label: 'True trace decay / event',            min: 0,    max: 0.05, step: 0.005, value: 0    },
-  { id: 'encDrift',     group: 'advanced', label: 'Encoding drift β (per studied word)', min: 0.1,  max: 0.9,  step: 0.05,  value: 0.6  },
-  { id: 'reinstate',    group: 'advanced', label: 'Reinstatement β',                min: 0,    max: 0.9,  step: 0.05,  value: 0.5  },
-  { id: 'featStrength', group: 'advanced', label: 'Feature strength',                    min: 0,    max: 2,    step: 0.1,   value: 1    },
-  { id: 'competition',  group: 'advanced', label: 'Competition',                         min: 0,    max: 0.4,  step: 0.02,  value: 0.1  },
+  { id: 'items',        group: 'standard', label: 'List length (max words)',             min: 4,    max: 12,   step: 1,     value: 8,
+    help: 'The most words you can study. A longer list means more words competing to be recalled.'},
+  { id: 'waitDrift',    group: 'standard', label: 'Drift per event β',              min: 0.05, max: 0.9,  step: 0.05,  value: 0.45,
+    help: 'How far the context moves with each event while time passes. This is the main forgetting-speed dial: higher values make old contexts fade faster.'},
+  { id: 'cueWeight',    group: 'standard', label: 'Cue weight',                          min: 0,    max: 3,    step: 0.1,   value: 1.5,
+    help: 'How strongly the ticked cue features count against the current context when the retrieval cue is built. At 0 the cue is just the current context.'},
+  { id: 'noise',        group: 'standard', label: 'Noise',                               min: 0,    max: 1,    step: 0.05,  value: 0.3,
+    help: 'How much randomness the retrieval race has. At 0 it is nearly deterministic, so the same words win every time.'},
+  { id: 'decay',        group: 'advanced', label: 'True trace decay / event',            min: 0,    max: 0.05, step: 0.005, value: 0,
+    help: 'The share of each trace lost per event. At 0, all forgetting is cue failure: the memories stay intact but out of reach. Above 0, traces really weaken.'},
+  { id: 'encDrift',     group: 'advanced', label: 'Encoding drift β (per studied word)', min: 0.1,  max: 0.9,  step: 0.05,  value: 0.6,
+    help: 'How far the context moves each time a word is studied. High values give each word a more distinct context.'},
+  { id: 'reinstate',    group: 'advanced', label: 'Reinstatement β',                min: 0,    max: 0.9,  step: 0.05,  value: 0.5,
+    help: 'How strongly a recalled word pulls its own context back in. At 0, reinstatement is off.'},
+  { id: 'featStrength', group: 'advanced', label: 'Feature strength',                    min: 0,    max: 2,    step: 0.1,   value: 1,
+    help: 'How strongly ticked features count against a random input, both when words are studied and when events happen.'},
+  { id: 'competition',  group: 'advanced', label: 'Competition',                         min: 0,    max: 0.4,  step: 0.02,  value: 0.1,
+    help: 'How strongly active words hold each other back in the race. High values give more winner-takes-all recall.'},
 ];
 
 /** How many race steps run per animation frame (the test's playback speed). */
@@ -135,6 +144,17 @@ function skipCustom() {
   if (!(n >= 1)) return;          // empty, zero or negative: do nothing
   box.value = n;                  // tidy up decimals or values over 500
   addEvents(n);
+}
+
+/** Put every slider back to its default. The memory itself (studied words, events) is not touched. */
+function resetParams() {
+  SLIDERS.forEach(s => {
+    $(s.id).value = s.value;
+    $('out-' + s.id).textContent = s.value;
+  });
+  buildStudyGrid();   // the list length may have changed
+  syncParams();
+  redraw();
 }
 
 /** Begin a recall test from the current context. */
@@ -390,9 +410,14 @@ function redraw() {
    5. UI CONSTRUCTION
    ===================================================================== */
 
+/** One slider: name + help icon + value on one line, the slider underneath. */
 function sliderHtml(s) {
+  const help = s.help ? `<span class="help" data-help="${s.help.replace(/"/g, '&quot;')}" data-label="What is ${s.label}?"></span>` : '';
   return `
-    <label>${s.label}<output id="out-${s.id}">${s.value}</output></label>
+    <div class="slider-head">
+      <span class="slider-name"><label for="${s.id}">${s.label}</label>${help}</span>
+      <output id="out-${s.id}" for="${s.id}">${s.value}</output>
+    </div>
     <input type="range" id="${s.id}" min="${s.min}" max="${s.max}" step="${s.step}" value="${s.value}">`;
 }
 
@@ -489,6 +514,8 @@ function wireEvents() {
   document.addEventListener('change', e => {
     if (e.target.closest('#model') && e.target.type === 'checkbox') redraw();
   });
+
+  $('btn-reset-params').onclick = resetParams;
 
   onRedraw(redraw);   // resize and theme changes (draw.js)
 }
