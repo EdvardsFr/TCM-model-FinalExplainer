@@ -48,6 +48,7 @@ const COLORS = {
   grey: '#99a1b3',
   frame: 'rgba(128,128,128,.4)',
   track: 'rgba(128,128,128,.2)',
+  altResult: '#a98af0'
 };
 
 
@@ -125,7 +126,7 @@ function drawReinstatementChart(target, ev, items, emptyMessage) {
   const top = 3 * LAYOUT.stripBlock + 8;
   g.fillStyle = textColor();
   g.fillText('Accessibility:', 0, top + 10);
-  g.fillStyle = COLORS.grey;   g.fillText('■ before', 90, top + 10);
+  g.fillStyle = COLORS.altResult;   g.fillText('■ before', 90, top + 10);
   g.fillStyle = COLORS.green;  g.fillText('■ after', 160, top + 10);
   g.fillStyle = COLORS.orange; g.fillText('| needed to win', 220, top + 10);
 
@@ -144,7 +145,7 @@ function drawReinstatementChart(target, ev, items, emptyMessage) {
     g.fillText((done ? '✓ ' : '') + it.word, 0, y + 11);
     g.fillStyle = COLORS.track;
     g.fillRect(left, y + 2, barW, LAYOUT.reinstateRow - 4);
-    g.fillStyle = COLORS.grey;
+    g.fillStyle = COLORS.altResult;
     g.fillRect(left, y + 3, xOf(ev.driveBefore[i]) - left, 6);
     g.fillStyle = COLORS.green;
     g.fillRect(left, y + 10, xOf(ev.driveAfter[i]) - left, 6);

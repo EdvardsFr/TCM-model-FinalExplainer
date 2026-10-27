@@ -174,13 +174,13 @@ function continueTest() {
   redraw();
 }
 
-/** End the test now, wherever it is. */
+/**
+ * While a test is running: end it now (the results stay on screen).
+ * Once it is over: clear it, removing everything that only exists during a test
+ * (recalled markers, reinstatement chart, test caption).
+ */
 function stopTest() {
-  const T = state.test;
-  if (!T || T.over) return;
-  T.over = true;
-  T.paused = false;
-  redraw();
+  state.test = null; state.lastRecall = null; redraw();
 }
 
 /**
@@ -225,7 +225,8 @@ function updateControls() {
   $('btn-study-next').textContent = full ? 'List is full (press Reset)' : `Study next: ${WORDS[studied]}`;
   $('btn-study-next').disabled = full;
   $('btn-continue').disabled = !(T && T.paused);
-  $('btn-stop').disabled = !(T && !T.over);
+  $('btn-stop').disabled = !T;
+  $('btn-stop').textContent = T && T.over ? 'Clear test' : 'Stop test';
 
   document.querySelectorAll('#study-grid tr[data-row]').forEach(row => {
     const i = +row.dataset.row;

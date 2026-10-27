@@ -35,7 +35,7 @@
       <p class="eyebrow">Declarative memory &middot; Temporal Context Model</p>
       <h1>Forgetting is not always loss</h1>
       <p class="lede">
-        You know the feeling: a name won&rsquo;t come, until someone says its first letter and suddenly it is
+        You know the feeling: a name won't come, until someone says its first letter and suddenly it is
         there. The memory was never gone. Psychologists call this <b>retrieval cue failure</b>: the memory is
         still stored, but nothing in your current situation leads to it.
       </p>
@@ -55,7 +55,7 @@
               This interactive explainer will focus on memory retrieval and where this memory retrieval can fail, 
               so how a memory can become temporarily inaccessible without being lost. First a baseline for memory 
               formation is needed. Memories are formed in three distinct steps, these being <b>encoding</b>, <b>storage/consolidation</b> 
-              and <b>decoding</b>.
+              and <b>retrieval</b>.
             </p>
             <p>
               When you come across a piece of information that needs to be remembered the brain takes in all the context 
@@ -335,30 +335,49 @@
     <section class="story" id="part-guide">
       <div class="story-text">
         <p class="step">Using the sandbox</p>
-        <h2>Three steps, then the panels</h2>
+        <h2>A loop, not a recipe</h2>
         <p>
-          The Model Tab puts all of this in one place. Controls are on the left and the panels showing what the
-          model is doing are on the right. Work down the three numbered cards:
+          The sandbox is not something to work through once from top to bottom. You build a memory, let time pass,
+          probe it with a test, then change one thing and look again. Almost everything useful you can do with it is
+          some version of that loop.
         </p>
-        <ol class="plain">
-          <li>
-            <b>Build the memory.</b> <i>Study next</i> encodes one word using the highlighted row of the study grid,
-            in whatever context you are in at that moment. <i>Reset &amp; study whole list</i> does the whole list at
-            once.
-          </li>
-          <li>
-            <b>Let time pass.</b> Each event moves the context. Add one, five or twenty.
-          </li>
-          <li>
-            <b>Test recall.</b> <i>Start test</i> runs the race. With <i>Pause after each recalled word</i> ticked, it
-            stops as soon as one word wins, so you can read the reinstatement panel. Untick it to let the test run to
-            the end.
-          </li>
-        </ol>
+
+        <h3>Build and wait, together</h3>
         <p>
-          <b>Features of the world</b> are things like a place or a song. <i>During wait &amp; test</i> keeps a feature
-          present in every event, like staying in the same room. <i>Use as cue</i> adds it to the retrieval cue. The
-          study grid decides which features are present when each word is studied.
+          Real memories are not stored in one go and then left alone. You learn something, you make time pass, you learn
+          something else.
+          The gaps of time matter, because the context drifts during every one of them, and each word keeps the context it was
+          studied in. The same words studied back to back or spread over a long time make two different memories.
+        </p>
+
+        <h3>Test without disturbing</h3>
+        <p>
+          A test only asks. It does not change what is stored and it does not move the clock. The context it works
+          with is a copy, and that copy changes only when a recalled word pulls its own context back in. So you can
+          test as often as you like: once the list is built, again after more time has passed, again with a different
+          cue. Every test starts from the same moment, which makes the results comparable. The race has noise, so a
+          repeated test can come out differently. Run it more than once before you decide that one result means
+          something.
+        </p>
+
+        <h3>Read the result from the top down</h3>
+        <p>
+          Start with the memories: which words came back, and in what order. Then ask why. The context vectors show
+          how alike the current context, a stored context and the cue are. The race shows what was competing. If a word
+          was recalled, the reinstatement panel shows what that did to the context. The stored associations panel shows what is actually stored.
+        </p>
+
+        <h3>Change one thing, then look again</h3>
+        <p>
+          The model settings describe how the simulation acts, such as how fast context drifts or how noisy recall is. The
+          feature tables describe what the <i>situation</i> contains: which place, song or smell is present when words
+          are studied, while time passes, and at test.
+        </p>
+        <p>
+          Change one of these at a time and rerun the same test. With the seed fixed and the same steps in the same
+          order you get the same world, so any difference comes from the thing you changed. Then try a few other seeds
+          to check that the effect is not a quirk of one world. If you lose track of the settings, resetting them to
+          their defaults leaves the memory as it is.
         </p>
       </div>
     </section>
@@ -376,17 +395,21 @@
       <div class="wrap">
         <aside>
           <div class="card">
-            <h2>1. Build the memory <span class="help" data-help="Placeholder"></span>  </h2>
+            <h2>Build the memory <span class="help" data-help="Learning the word list. 
+
+              The seed fixes all the randomness. So the same seed will provide the same 'random' changes every time. 'Reset' will return to the blank starting state.
+              
+              Studying a word counts as one event: the context drifts a little, and the new context is stored with the word. 'Study next' learns one word; 'Reset &amp; study whole list' starts over and learns them all."></span></h2>
             <label class="inline" for="seed">Seed</label>
             <input type="number" id="seed" value="7">
             <button class="secondary" id="btn-reset">Reset</button>
             <button class="secondary" id="btn-random-seed">Random seed</button><br>
             <button id="btn-study-next">Study next</button>
             <button class="secondary" id="btn-study-all">Reset &amp; study whole list</button>
-          </div>
 
-          <div class="card">
-            <h2>2. Let time pass <span class="help" data-help="Placeholder"></span></h2>
+            <p class="card-label">Let time pass <span class="help" data-help="Events represent the passage of time. Each event slightly changes the current context. Stored context is not changed or erased. Any features ticked under 'While time passes' affect these events, so the context becomes more similar to their pattern.
+              
+              For longer wait times, you can type values into the box and press 'Skip events'"></span></p>
             <button class="secondary" id="btn-wait-1">+1 event</button>
             <button class="secondary" id="btn-wait-5">+5 events</button>
             <button class="secondary" id="btn-wait-20">+20 events</button>
@@ -396,8 +419,11 @@
             </div>
           </div>
 
+
           <div class="card">
-            <h2>3. Test recall <span class="help" data-help="Placeholder"></span></h2>
+            <h2>Test recall <span class="help" data-help="Make the model try to recall words based on the current context plus any cues you have ticked under 'Use as cue'. Words compete in a noisy race, and the first to reach the threshold is recalled. The noise makes it so a different word might win every time the test is ran. Each recalled word pulls the context towards its own stored context (reinstatement), which might change who wins next.
+
+              Ticking 'Pause after each recalled word' lets you step through recall one word at a time. Without it being ticked, the test will continue recalling words until it fails or recalls all of them."></span></h2>
             <button id="btn-test">Start test</button>
             <button class="secondary" id="btn-continue" disabled>Continue</button>
             <button class="secondary" id="btn-stop" disabled>Stop test</button>
@@ -408,7 +434,23 @@
           </div>
 
           <div class="card">
-            <h2>Model settings <button class="secondary" id="btn-reset-params">Reset</button> <span class="help" data-help="Placeholder"></span></h2>
+            <h2>Features of the world <span class="help" data-help="Things that can be present in the environment: places, a mood, a song, a smell. Each has its own fixed pattern, just like the context. 'While time passes' adds the feature to every event that passes, so the drifting context becomes more alike. 'Use as cue' adds it to the retrieval cue at test. Relevant cues will make recall of certain memories easier."></span></h2>
+            <table id="feature-table"> <!-- rows filled by buildFeatureTable() -->
+              <tr><th></th><th>While time passes</th><th>Use as cue</th></tr>
+            </table>
+          </div>
+
+          <div class="card">
+            <h2>Study context per word <span class="help" data-help="Choose which features are present while each word is learned. A ticked feature is added to that word's learning event, so it becomes part of the context stored with the word. This is what a cue can later match. The presets fill the whole grid at once: the same features for every word, two different places for two halves of the list, none, or random."></span></h2>
+            <div id="study-grid"></div> <!-- filled by buildStudyGrid() -->
+            <button class="secondary" data-preset="same">Same for all</button>
+            <button class="secondary" data-preset="split">Split A / B</button>
+            <button class="secondary" data-preset="none">None</button>
+            <button class="secondary" data-preset="random">Random</button>
+          </div>
+
+          <div class="card">
+            <h2>Model settings <button class="secondary" id="btn-reset-params">Reset</button> <span class="help" data-help="The parameters that are used during calculations. 'Reset' restores all defaults."></span></h2>
             <details class="setting-group">
               <summary>Standard settings</summary>
               <div id="sliders-standard"> </div> <!-- filled by buildSliders() in sandbox.js -->
@@ -418,28 +460,11 @@
               <div id="sliders-advanced"></div>
             </details>
           </div>
-
-          <div class="card">
-            <h2>Features of the world <span class="help" data-help="Placeholder"></span></h2>
-            <table id="feature-table"> <!-- rows filled by buildFeatureTable() -->
-              <tr><th></th><th>During wait &amp; test</th><th>Use as cue</th></tr>
-            </table>
-          </div>
-
-          <div class="card">
-            <h2>Study context per word <span class="help" data-help="Placeholder"></span></h2>
-            <div id="study-grid"></div> <!-- filled by buildStudyGrid() -->
-            <p class="legend">A Place A &middot; B Place B &middot; M Mood &middot; &#9834; Song &middot; &#9749; Smell</p>
-            <button class="secondary" data-preset="same">Same for all</button>
-            <button class="secondary" data-preset="split">Split A / B</button>
-            <button class="secondary" data-preset="none">None</button>
-            <button class="secondary" data-preset="random">Random</button>
-          </div>
         </aside>
 
         <main>
           <div class="card">
-            <h2>Memories (click to inspect) <span class="help" data-help="Placeholder"></span></h2>
+            <h2>Memories (click to inspect) <span class="help" data-help="List of learned words. Click one to see how available it is, and to display its stored context in the card below. 'Trace strength' is how intact the trace is. (100% unless 'True trace decay / event' is enabled in the advanced settings)."></span></h2>
             <div class="chips" id="chips"></div>
             <div id="caption"></div>
             <!-- <div class="meter"><span>Stored (trace intact)</span>
@@ -451,15 +476,25 @@
             <div id="decay-meters"></div> <!-- one bar per memory, filled by drawDecayMeters() -->
           </div>
 
-          <div class="card"><h2>Context vectors (80 units) <span class="help" data-help="Placeholder"></span></h2>
+          <div class="card"><h2>Context vectors (80 units) <span class="help" data-help="Context is a representation of the brain's internal state or neural activity. Each context is a pattern of 80 numbers, drawn as a row of cells: purple is positive, orange negative, and stronger colour means a larger value. 
+
+            If there are studied words, the first row shows the context stored alongside the selected memory (does not change). 
+
+            The second row shows the current context (changes over time), with overlap with the stored context written above it. 
+
+            The third row shows the current context combined with features selected as 'Use as cue'. With no features selected, this will be the same as the second row."></span></h2>
             <canvas id="cv-strips" style="height:132px"></canvas></div>
-          <div class="card"><h2>Retrieval race <span class="help" data-help="Placeholder"></span></h2>
+          <div class="card"><h2>Retrieval race <span class="help" data-help="Every word receives activation. Activation builds up over time, depending on the context and cue overlap, noise, as well as competition. The first word to reach the threshold is recalled."></span></h2>
             <canvas id="cv-race"></canvas></div>
-          <div class="card"><h2>Reinstatement: what the last recall did to the context <span class="help" data-help="Placeholder"></span></h2>
+          <div class="card"><h2>Reinstatement: what the last recall did to the context <span class="help" data-help="When a word is recalled, its stored context is blended back into the current context. 
+            
+            The three rows show the context before retrieval, the recalled word's stored context, and the combined context after. 
+            
+            The bars below show a comparison for each learned word between the stored context's overlap with the previous context vs the newly combined context. Words that were learned soon before or after the recalled word should experience a bigger increase in overlap."></span></h2>
             <canvas id="cv-reinstate"></canvas></div>
           <!-- <div class="card"><h2>Drift: overlap of each memory's stored context with the context at each event</h2>
             <canvas id="cv-drift"></canvas></div> -->
-          <div class="card"><h2>Stored associations (item to context) <span class="help" data-help="Placeholder"></span></h2>
+          <div class="card"><h2>Stored associations (item to context) <span class="help" data-help="All the stored memories. Each row shows the word and the context pattern stored alongside it when it was learned. These patterns don't change as time passes."></span></h2>
             <canvas id="cv-matrix"></canvas></div>
         </main>
       </div>
