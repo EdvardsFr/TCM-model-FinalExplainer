@@ -17,7 +17,7 @@
 
   <div class="topbar">
     <nav class="tabs" role="tablist" aria-label="Page sections">
-      <button class="tab" role="tab" id="tab-explainer" data-tab="explainer" aria-controls="panel-explainer" aria-selected="true">Explainer</button>
+      <button class="tab" role="tab" id="tab-explainer" data-tab="explainer" aria-controls="panel-explainer" aria-selected="true">Explanation</button>
       <button class="tab" role="tab" id="tab-model" data-tab="model" aria-controls="panel-model" aria-selected="false">Model</button>
     </nav>
     <button class="theme-toggle" id="theme-toggle" type="button"></button> <!-- icon filled by ui.js -->
@@ -52,7 +52,7 @@
           <div class="story-text">
             <p class="step">1 &middot; Introduction</p>
             <p>
-              This interactive explainer will focus on memory retrieval and where this memory retrieval can fail, 
+              This interactive model will focus on memory retrieval and where this memory retrieval can fail, 
               so how a memory can become temporarily inaccessible without being lost. First a baseline for memory 
               formation is needed. Memories are formed in three distinct steps, these being <b>encoding</b>, <b>storage/consolidation</b> 
               and <b>retrieval</b>.
@@ -77,7 +77,7 @@
             <p class="step">2 &middot; The big idea</p>
             <h2>Stored is not the same as reachable</h2>
             <p>
-              As mentioned this explainer will focus on retrieval failure, which can be shown using the widget on the right. 
+              As mentioned this model focuses on retrieval failure, which can be shown using the widget on the right. 
               This widget is very fundamentally what this whole model shows. It learns a list of words, which is shown in the 
               grey bar. All of these words are stored with the context of when they were learned. The purple bar represents how 
               many of these memories can be retrieved without any cues. The way this happens is a comparison between the current 
@@ -106,7 +106,7 @@
             <h2>A context is a pattern, and overlap says how alike two patterns are</h2>
             <p>
               So all items are stored with their context, but how is this context stored? It is simply a vector/list of 
-              80 numbers which can range from -1 to 1. In this explainer it will be showcased using this line of boxes with 
+              80 numbers which can range from -1 to 1. In our model it will be showcased using this line of boxes with 
               the <b>orange boxes being negative</b> and the <b>purple boxes being positive values</b>.
             </p>
             <p>
@@ -143,7 +143,11 @@
             <p>
               t stands for the context vector, with t<sub>new</sub> being the updated context vector, t<sub>old</sub> being the old context vector and 
               t<sub>input</sub> representing the new context that will be added. &beta; is how strongly the new event pushes. &rho; is chosen automatically 
-              so the pattern stays the same size, which means a larger &beta; pushes out more of the old context.
+              so the context stays a unit length vector, which means a larger &beta; pushes out more of the old context.
+            </p>
+            <p>
+              Note that the same formula is also used for <b>Studying</b> and <b>Reinstatement</b> (both explained later), with the difference being
+              that in those situations instead of Drift per event, &beta; stands for <b>Encoding drift</b> and <b>Reinstatement</b> respectively.
             </p>
             <p>
               Nothing is erased. The old context is simply diluted, event after event. The bottom strip on the right
